@@ -102,6 +102,7 @@ export async function loginUser(username: string) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, asseResp }),
+    credentials: "include",
   });
   const verifyJson = await verifyRes.json();
   if (!verifyRes.ok) {

@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
 import { loginUser, registerUser } from "@/lib/webauthn";
-import "@/assets/css/auth.css"; 
+import "@/assets/css/auth.css";
+import { useRouter } from "next/dist/client/components/navigation";
 
 export default function AuthPage() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,6 +20,8 @@ export default function AuthPage() {
       if (result.success) {
         localStorage.setItem("token", result.token);
         setMessage("✅ Đăng nhập thành công!");
+        router.push("/");
+        console.log("Username:", username);
       } else {
         setMessage("❌ Sai thông tin hoặc chưa đăng ký.");
       }
@@ -38,7 +42,9 @@ export default function AuthPage() {
       if (result.success) {
         setMessage("✅ Đăng ký thành công! Bạn có thể đăng nhập.");
       } else {
-        setMessage("❌ Đăng ký thất bại: " + (result.error || "Không rõ nguyên nhân"));
+        setMessage(
+          "❌ Đăng ký thất bại: " + (result.error || "Không rõ nguyên nhân")
+        );
       }
     } catch (e: any) {
       setMessage("❌ Lỗi frontend: " + (e?.message || "Không rõ nguyên nhân"));

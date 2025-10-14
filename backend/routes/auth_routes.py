@@ -65,42 +65,65 @@ async def register_start(request: Request):
 
 # ===================== REGISTER VERIFY =====================
 @router.post("/register/verify")
-async def register_verify(request: Request):
+# ===================== LOGIN VERIFY =====================
+@router.post("/login/verify")
+async def login_verify(request: Request):
     body = await request.json()
     username = body.get("username")
-    att_resp = body.get("attResp")
+    asse_resp = body.get("asseResp")
 
-    if not username or not att_resp:
+    if not username or not asse_resp:
         return JSONResponse({"error": "Missing data"}, status_code=400)
 
     users = load_users()
     if username not in users:
         return JSONResponse({"error": "User not found"}, status_code=404)
 
-    # Decode challenge về bytes để khớp với client data
+    # Decode challenge và public_key về bytes để verify
     expected_challenge_str = users[username]["challenge"]
     expected_challenge = b64url_to_bytes(expected_challenge_str)
 
+    public_key_b64 = users[username]["public_key"]
+    public_key_bytes = b64url_to_bytes(public_key_b64)
+
     try:
-        verification = verify_registration_response(
-            credential=att_resp,
+        verification = verify_authentication_response(
+            credential=asse_resp,
             expected_challenge=expected_challenge,
             expected_rp_id=RP_ID,
             expected_origin=EXPECTED_ORIGINS,
+            credential_public_key=public_key_bytes,
+            credential_current_sign_count=users[username]["sign_count"],
         )
     except Exception as e:
         return JSONResponse({"error": f"Verification failed: {str(e)}"}, status_code=400)
 
-    # Encode credential_id/public_key sang base64url trước khi lưu để JSON serialize được
-    users[username] = {
-        "credential_id": base64.urlsafe_b64encode(verification.credential_id).decode("utf-8"),
-        "public_key": base64.urlsafe_b64encode(verification.credential_public_key).decode("utf-8"),
-        "sign_count": verification.sign_count,
-    }
+    # Cập nhật sign_count sau khi xác thực thành công
+    users[username]["sign_count"] = verification.new_sign_count
     save_users(users)
 
-    return JSONResponse({"success": True})
+    # ✅ Tạo JWT token
+    token = jwt.encode({"username": username}, SECRET_KEY, algorithm="HS256")
 
+    # ✅ Trả về response + set cookie cho frontend
+    response = JSONResponse({
+        "success": True,
+        "token": token,
+        "message": "Login successful",
+        "username": username
+    })
+
+    # ✅ Cookie token giúp Next.js middleware đọc được
+    response.set_cookie(
+        key="token",
+        value=token,
+        httponly=True,
+        samesite="lax",  # Cho phép cookie hoạt động trên localhost
+        max_age=60 * 60 * 24 * 7,  # 7 ngày
+        path="/",
+    )
+
+    return response
 
 # ===================== LOGIN START =====================
 @router.post("/login/start")
