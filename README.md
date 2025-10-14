@@ -30,8 +30,7 @@ images_studio/
     │   │   ├── page.tsx                  # Trang chủ (home)
     │   │   └── auth/                     # Nhóm trang xác thực
     │   │       ├── layout.tsx            # Layout cho nhóm /auth/*
-    │   │       ├── login/page.tsx        # Trang đăng nhập Passkey
-    │   │       └── register/page.tsx     # Trang đăng ký Passkey
+    │   │       └── page.tsx              # Trang đăng nhập / đăng kí Passkey
     │   │
     │   ├── lib/
     │   │   └── webauthn.ts               # Hàm gọi API backend + WebAuthn logic
