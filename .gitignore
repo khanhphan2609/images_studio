@@ -1,0 +1,61 @@
+# ===============================
+# 🌍 Global ignores
+# ===============================
+.DS_Store
+Thumbs.db
+*.log
+*.env
+.env.*
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+node_modules/
+dist/
+build/
+.cache/
+.venv/
+venv/
+*.sqlite3
+
+# ===============================
+# 🚀 Backend (FastAPI)
+# ===============================
+backend/__pycache__/
+backend/.venv/
+backend/venv/
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/.coverage
+backend/coverage.xml
+backend/data/*.db
+backend/data/*.sqlite
+backend/data/*.bak
+
+# Ignore Python virtual environments
+*.egg-info/
+*.egg
+*.pyo
+*.pyd
+
+# ===============================
+# 💻 Frontend (Next.js)
+# ===============================
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+frontend/.env.local
+frontend/.env.development
+frontend/.env.production
+frontend/.vercel/
+frontend/.turbo/
+
+# ===============================
+# ⚙️ OS & Editor files
+# ===============================
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
