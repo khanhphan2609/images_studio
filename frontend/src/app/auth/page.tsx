@@ -19,9 +19,9 @@ export default function AuthPage() {
       const result = await loginUser(username);
       if (result.success) {
         localStorage.setItem("token", result.token);
+        localStorage.setItem("username", username);
         setMessage("✅ Đăng nhập thành công!");
         router.push("/");
-        console.log("Username:", username);
       } else {
         setMessage("❌ Sai thông tin hoặc chưa đăng ký.");
       }
