@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { loginUser, registerUser } from "@/lib/webauthn";
+import { loginUser, registerUser } from "@/services/auth";
 import "@/assets/css/auth.css"; 
 
 export default function AuthPage() {
@@ -21,8 +21,12 @@ export default function AuthPage() {
       } else {
         setMessage("❌ Sai thông tin hoặc chưa đăng ký.");
       }
-    } catch (e: any) {
-      setMessage("❌ Lỗi: " + e.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setMessage("❌ Lỗi: " + error.message);
+      } else {
+        setMessage("❌ Lỗi không xác định");
+      }
     }
   };
 
@@ -40,8 +44,12 @@ export default function AuthPage() {
       } else {
         setMessage("❌ Đăng ký thất bại: " + (result.error || "Không rõ nguyên nhân"));
       }
-    } catch (e: any) {
-      setMessage("❌ Lỗi frontend: " + (e?.message || "Không rõ nguyên nhân"));
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setMessage("❌ Lỗi frontend: " + error.message);
+      } else {
+        setMessage("❌ Lỗi frontend không xác định");
+      }
     } finally {
       setLoading(false);
     }

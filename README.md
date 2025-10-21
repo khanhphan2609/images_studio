@@ -8,43 +8,62 @@ Dự án này minh họa cách tích hợp xác thực bằng **vân tay / Face 
 ## 🧩 Cấu trúc thư mục
 
 images_studio/
-├── backend/                              # 🚀 FastAPI server
-│   ├── main.py                           # Entry chính của backend
-│   ├── routes/
-│   │   └── auth_routes.py                # Xử lý các API /api/auth/*
-│   ├── utils/
-│   │   ├── users.py                      # Đọc / ghi dữ liệu người dùng JSON
-│   │   └── converts.py                   # Hàm encode/decode bytes → base64
-│   ├── data/
-│   │   └── users.json                    # Lưu tạm người dùng & credential
-│   └── requirements.txt                  # Các thư viện Python cần thiết
 │
-└── frontend/                             # 💻 Next.js (App Router)
-    ├── public/
-    │
-    ├── src/
-    │   ├── app/                          # App Router chính của Next.js
-    │   │   ├── favicon.ico               # Icon hiển thị trên trình duyệt
-    │   │   ├── globals.css               # CSS toàn cục
-    │   │   ├── layout.tsx                # Layout tổng cho toàn trang
-    │   │   ├── page.tsx                  # Trang chủ (home)
-    │   │   └── auth/                     # Nhóm trang xác thực
-    │   │       ├── layout.tsx            # Layout cho nhóm /auth/*
-    │   │       └── page.tsx              # Trang đăng nhập / đăng kí Passkey
-    │   │
-    │   ├── lib/
-    │   │   └── webauthn.ts               # Hàm gọi API backend + WebAuthn logic
-    │   │
-    │   └── utils/
-    │       └── webauthn.ts               # Hàm helper WebAuthn client-side
-    │
-    ├── eslint.config.mjs
-    ├── next.config.ts
-    ├── package.json
-    ├── postcss.config.mjs
-    ├── tailwind.config.ts
-    └── tsconfig.json
-
+├── backend/
+│   ├── app/
+│   │   ├── api/                # Định nghĩa các router
+│   │   │   ├── v1/
+│   │   │   │   └── auth.py
+│   │   │   └── __init__.py
+│   │   │
+│   │   ├── core/               # Cấu hình chính, settings, security
+│   │   │   ├── config.py
+│   │   │   ├── security.py
+│   │   │   └── __init__.py
+│   │   │
+│   │   ├── models/             # SQLAlchemy / Pydantic models
+│   │   │   └── user.py
+│   │   │
+│   │   ├── services/           # Logic nghiệp vụ
+│   │   │   └── user_service.py
+│   │   │
+│   │   ├── db/                 # DB session, engine
+│   │   │   └── engine.py
+│   │   │
+│   │   └── main.py             # Entry point FastAPI app
+│   │
+│   ├── requirements.txt
+│   ├── .env
+│   └── alembic/                # Nếu dùng Alembic để migration DB
+│
+├── frontend/
+│   ├── public/                 # Hình ảnh, favicon, robots.txt
+│   ├── src/
+│   │   ├── assets/             # CSS, images, fonts
+│   │   ├── components/         # Reusable React components
+│   │   ├── app/                # Pages của Next.js
+│   │   │   ├── auth/           # Auth routes (Next.js)
+│   │   │   │   ├── layout.tsx           
+│   │   │   │   └── page.tsx    
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   │
+│   │   ├── hooks/              # Custom React hooks
+│   │   ├── context/            # React context / global state
+│   │   ├── services/           # Gọi API backend (axios/fetch)
+│   │   ├── utils/              # Hàm tiện ích
+│   │   └── styles/             # CSS
+│   │
+│   ├── .env.local
+│   ├── .eslintrc.config.mjs
+│   ├── next-env.d.ts
+│   ├── next.config.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.congig.mjs
+│   └── tsconfig.json
+├── .gitignore
+└── README.md
 
 ---
 
