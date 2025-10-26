@@ -25,10 +25,17 @@ export default function useUploadImage() {
     saveImages(newImages);
   };
 
+   const updateImage = (index: number, newImg: string) => {
+    const newImages = [...images];
+    newImages[index] = newImg;
+    saveImages(newImages);
+  };
+
   return {
     images,
     addImage,
     removeImage,
+    updateImage,
     setImages,
   };
 }
