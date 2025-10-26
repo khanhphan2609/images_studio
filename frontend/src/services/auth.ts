@@ -18,13 +18,13 @@ export async function testSupabase(): Promise<any> {
 }
 
 // POST example: registration
-export async function registerUser(email: string, username: string): Promise<any> {
+export async function registerUser(username: string): Promise<any> {
   const res = await fetch(`${API_URL}/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ email, username }),
+    body: JSON.stringify({ username }),
   });
 
   if (!res.ok) {
