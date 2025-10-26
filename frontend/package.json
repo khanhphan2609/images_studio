@@ -12,7 +12,8 @@
     "@simplewebauthn/browser": "^13.2.2",
     "next": "15.5.5",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-easy-crop": "^5.5.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
