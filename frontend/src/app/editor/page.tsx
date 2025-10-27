@@ -11,12 +11,27 @@ export default function EditorPage() {
   const [mainIndex, setMainIndex] = useState(0);
   const [isCropOpen, setIsCropOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showEffects, setShowEffects] = useState(false); // 🌈 Hiển thị menu hiệu ứng
-  const [currentEffect, setCurrentEffect] = useState<FilterKey>("none"); // Hiệu ứng đang chọn
-  const [effectValue, setEffectValue] = useState<number>(100); // % cường độ hiệu ứng
+  const [showEffects, setShowEffects] = useState(false); 
+  const [currentEffect, setCurrentEffect] = useState<FilterKey>("none"); 
+  const [effectValue, setEffectValue] = useState<number>(100); 
+  const [showCreateBgPrompt, setShowCreateBgPrompt] = useState(false); 
+  const [bgPrompt, setBgPrompt] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 📤 Xử lý khi chọn ảnh
+  type FilterKey = keyof typeof filters;
+
+  // 🔹 Danh sách filter CSS
+  const filters = {
+    none: (v: number) => "none",
+    grayscale: (v: number) => `grayscale(${v / 100})`,
+    sepia: (v: number) => `sepia(${v / 100})`,
+    invert: (v: number) => `invert(${v / 100})`,
+    brightness: (v: number) => `brightness(${v / 50})`,
+    contrast: (v: number) => `contrast(${v / 100})`,
+    blur: (v: number) => `blur(${v / 20}px)`,
+  };
+
+  // 📤 Xử lý chọn ảnh
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -25,13 +40,13 @@ export default function EditorPage() {
     reader.readAsDataURL(file);
   };
 
-  // ✂️ Khi lưu ảnh đã cắt
+  // ✂️ Lưu ảnh cắt
   const handleCropSave = (croppedImage: string) => {
     updateImage(mainIndex, croppedImage);
     setIsCropOpen(false);
   };
 
-  // 🪄 Hàm xoá nền riêng biệt
+  // 🪄 Xoá nền
   const handleRemoveBg = async () => {
     const currentImage = images[mainIndex];
     if (!currentImage) return;
@@ -47,8 +62,10 @@ export default function EditorPage() {
         }
       );
       const data = await response.json();
-      if (data.image) updateImage(mainIndex, data.image);
-      else alert("❌ Lỗi khi xoá nền: " + (data.error || "Không xác định"));
+      if (data.image) {
+        updateImage(mainIndex, data.image);
+        // setShowCreateBgPrompt(true); // 🌟 Gợi ý tạo nền AI
+      } else alert("❌ Lỗi khi xoá nền: " + (data.error || "Không xác định"));
     } catch (error) {
       console.error(error);
       alert("Không thể kết nối tới máy chủ. Vui lòng thử lại sau!");
@@ -58,34 +75,19 @@ export default function EditorPage() {
   };
 
   // 🌈 Bật/tắt menu hiệu ứng
-  const handleEffects = () => {
-    setShowEffects((prev) => !prev);
-  };
+  const handleEffects = () => setShowEffects((prev) => !prev);
 
-  // Danh sách filter CSS (có thể chỉnh %)
-  const filters = {
-    none: (v: number) => "none",
-    grayscale: (v: number) => `grayscale(${v / 100})`,
-    sepia: (v: number) => `sepia(${v / 100})`,
-    invert: (v: number) => `invert(${v / 100})`,
-    brightness: (v: number) => `brightness(${v / 50})`,
-    contrast: (v: number) => `contrast(${v / 100})`,
-    blur: (v: number) => `blur(${v / 20}px)`,
-  };
-
-  type FilterKey = keyof typeof filters;
-
-  // 📸 Áp dụng hiệu ứng
+  // Áp dụng hiệu ứng
   const applyEffect = (effect: FilterKey) => {
     setCurrentEffect(effect);
-    setEffectValue(100); // reset về mặc định
+    setEffectValue(100); 
   };
 
-  // ⚙️ Xử lý hành động từ navbar
+  // ⚙️ Hành động từ navbar
   const handleAction = (action: string) => {
     if (action === "crop") setIsCropOpen(true);
     if (action === "remove-bg") handleRemoveBg();
-    if (action === "effects") handleEffects(); // 🌈 Hiển thị hiệu ứng
+    if (action === "effects") handleEffects(); 
   };
 
   if (images.length === 0)
@@ -106,11 +108,9 @@ export default function EditorPage() {
   const mainImage = images[mainIndex];
 
   return (
-    <main className="flex flex-col items-center justify-start min-h-screen px-4 py-8 bg-gray-50 relative">
-      {/* Tiêu đề */}
-      <h1 className="text-4xl font-extrabold text-gray-900 mb-10">Editor</h1>
+    <main className="flex flex-col items-center justify-start min-h-screen px-4 py-8 relative">
+      <h1 className="text-4xl font-extrabold text-gray-900 mb-10 mt-14"></h1>
 
-      {/* Thanh công cụ */}
       <EditorNavbar onAction={handleAction} />
 
       {/* Ảnh chính */}
@@ -123,7 +123,7 @@ export default function EditorPage() {
         />
       </div>
 
-      {/* Slider điều chỉnh cường độ */}
+      {/* Slider cường độ */}
       {currentEffect !== "none" && (
         <div className="flex items-center gap-3 mb-6">
           <label className="text-sm font-medium text-gray-700">
@@ -140,7 +140,7 @@ export default function EditorPage() {
         </div>
       )}
 
-      {/* 🌈 Danh sách hiệu ứng */}
+      {/* Hiệu ứng */}
       {showEffects && (
         <div className="flex flex-wrap gap-4 justify-center mb-6">
           {(Object.keys(filters) as FilterKey[]).map((effect) => (
@@ -157,7 +157,7 @@ export default function EditorPage() {
                 src={mainImage}
                 alt={effect}
                 className="w-20 h-20 object-cover rounded-md"
-                style={{ filter: filters[effect](100) }}
+                style={{ filter: filters[effect](effectValue) }}
               />
               <span className="absolute bottom-1 left-1 right-1 text-center text-xs bg-black/50 text-white rounded-md">
                 {effect}
@@ -217,7 +217,49 @@ export default function EditorPage() {
         />
       )}
 
-      {/* Loader khi xử lý */}
+      {/* Gợi ý tạo nền AI */}
+      {showCreateBgPrompt && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white p-4 rounded-md shadow-lg flex gap-2 items-center z-50">
+          <input
+            type="text"
+            placeholder="Nhập mô tả nền AI..."
+            className="border border-gray-300 rounded-md px-2 py-1"
+            value={bgPrompt}
+            onChange={(e) => setBgPrompt(e.target.value)}
+          />
+          <button
+            className="bg-blue-600 text-white px-4 py-1 rounded-md hover:bg-blue-700"
+            onClick={async () => {
+              if (!bgPrompt) return alert("Vui lòng nhập prompt!");
+              setIsProcessing(true);
+              try {
+                const res = await fetch(
+                  `${process.env.NEXT_PUBLIC_API_URL}/api/v1/image/generate-image`,
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt: bgPrompt, width: 512, height: 512 }),
+                  }
+                );
+                const data = await res.json();
+                if (data.image) {
+                  updateImage(mainIndex, data.image);
+                  setShowCreateBgPrompt(false);
+                } else alert("❌ Lỗi tạo nền: " + (data.error || "Không xác định"));
+              } catch (error) {
+                console.error(error);
+                alert("Không thể kết nối tới máy chủ!");
+              } finally {
+                setIsProcessing(false);
+              }
+            }}
+          >
+            Tạo nền AI
+          </button>
+        </div>
+      )}
+
+      {/* Loader */}
       {isProcessing && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-xl font-semibold z-40">
           <Loader />
